@@ -4083,24 +4083,42 @@ bool LoadExternalBlockFileBCD(const CChainParams& chainparams, FILE* fileIn, CDi
                     CValidationState state;
                     LogPrint(BCLog::REINDEX, "Found prev hash in index\n");
                     BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-                    assert(mi != mapBlockIndex.end());
-                    const CBlockIndex *pindex = mi->second;
-                    LogPrint(BCLog::REINDEX, "prev height %d\n", pindex->nHeight);
 
-                    block.nHeight = pindex->nHeight +1;
+                    if (mi !=  mapBlockIndex.end())
+                    {
+                        assert(mi != mapBlockIndex.end());
+                        const CBlockIndex *pindex = mi->second;
+                        LogPrint(BCLog::REINDEX, "prev height %d\n", pindex->nHeight);
+                        block.nHeight = pindex->nHeight +1;
+                    }
+
                     if (block.nHeight >= (500000 - 10))
                         continue;
                     if (AcceptBlock(pblock, state, chainparams, nullptr, true, dbp, nullptr))
                     {
-                        LogPrint(BCLog::REINDEX, "BLOCK ACCEPTEed\n");
+                        LogPrint(BCLog::REINDEX, "BLOCK ACCEPTEED ysy\n");
                         nLoaded++;
                     }else
                     {
-                        LogPrint(BCLog::REINDEX, "BLOCK REJECTED\n");
+                        LogPrint(BCLog::REINDEX, "BLOCK REJECTED ysy\n");
                     }
                     if (state.IsError())
                         break;
+                } else if (hash != chainparams.GetConsensus().hashGenesisBlock && mapBlockIndex[hash]->nHeight % 1000 == 0) {
+                    LogPrint(BCLog::REINDEX, "Block Import: already had block %s at height %d\n", hash.ToString(), mapBlockIndex[hash]->nHeight);
                 }
+
+                // Activate the genesis block so normal node progress can continue
+                if (hash == chainparams.GetConsensus().hashGenesisBlock) {
+                    LogPrint(BCLog::REINDEX, "Found Genesis Block ysy\n" );
+                    CValidationState state;
+                    if (!ActivateBestChain(state, chainparams)) {
+                        break;
+                    }
+                }
+
+                NotifyHeaderTip();
+
 
 #if 0
                 // process in case the block isn't known yet
