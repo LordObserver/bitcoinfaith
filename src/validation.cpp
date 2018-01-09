@@ -4088,6 +4088,8 @@ bool LoadExternalBlockFileBCD(const CChainParams& chainparams, FILE* fileIn, CDi
                     LogPrint(BCLog::REINDEX, "prev height %d\n", pindex->nHeight);
 
                     block.nHeight = pindex->nHeight +1;
+                    if (block.nHeight >= (500000 - 10))
+                        continue;
                     if (AcceptBlock(pblock, state, chainparams, nullptr, true, dbp, nullptr))
                     {
                         LogPrint(BCLog::REINDEX, "BLOCK ACCEPTEed\n");

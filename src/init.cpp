@@ -672,7 +672,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles)
     for (const fs::path& path : vImportFiles) {
         int nFile =1;
         while(true) {
-            if (nFile == 30)
+            if (nFile >= 1073)
                 break;
             std::string pathstr = strprintf("/home/ysy/.bitcoin/blocks/blk%05u.dat", nFile);
             FILE *file = fsbridge::fopen(pathstr, "rb");
